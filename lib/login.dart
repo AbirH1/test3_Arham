@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class login extends StatelessWidget {
   @override
@@ -8,7 +9,6 @@ class login extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        brightness: Brightness.light,
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
@@ -20,6 +20,7 @@ class login extends StatelessWidget {
             color: Colors.black,
           ),
         ),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
