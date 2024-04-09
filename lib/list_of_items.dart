@@ -73,93 +73,101 @@ class _GroceryListPageState extends State<GroceryListPage> {
     });
   }
 
+  void _navigateToAddItemPage() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => AddGroceryItemPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => true, // Handle back button press
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Grocery Item List'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Grocery Item List'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        body: ListView.builder(
-          itemCount: _groceryItems.length,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: Offset(0, 3),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: _navigateToAddItemPage,
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: _groceryItems.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.blue,
+                child: Text(
+                  _groceryItems[index]['name'][0].toUpperCase(),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              title: Text(
+                _groceryItems[index]['name'],
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_groceryItems[index]['description']),
+                  Text(
+                    'Expiry Date: ${_groceryItems[index]['expiryDate'].month}/${_groceryItems[index]['expiryDate'].day}/${_groceryItems[index]['expiryDate'].year}',
+                    style: TextStyle(fontSize: 12, color: Colors.red),
                   ),
                 ],
               ),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: Text(
-                    _groceryItems[index]['name'][0].toUpperCase(),
-                    style: TextStyle(color: Color.fromARGB(255, 247, 249, 248)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.remove),
+                    onPressed: () {
+                      _decrementQuantity(index);
+                    },
                   ),
-                ),
-                title: Text(
-                  _groceryItems[index]['name'],
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(_groceryItems[index]['description']),
-                    Text(
-                      'Expiry Date: ${_groceryItems[index]['expiryDate'].month}/${_groceryItems[index]['expiryDate'].day}/${_groceryItems[index]['expiryDate'].year}',
-                      style: TextStyle(fontSize: 12, color: Colors.red),
+                  SizedBox(width: 8),
+                  SizedBox(
+                    width: 40,
+                    child: TextField(
+                      controller: _controllers[index],
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () {
-                        _decrementQuantity(index);
-                      },
-                    ),
-                    SizedBox(width: 8),
-                    SizedBox(
-                      width: 40,
-                      child: TextField(
-                        controller: _controllers[index],
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        _incrementQuantity(index);
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      _incrementQuantity(index);
+                    },
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -170,5 +178,19 @@ class _GroceryListPageState extends State<GroceryListPage> {
       controller.dispose();
     }
     super.dispose();
+  }
+}
+
+class AddGroceryItemPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Grocery Item'),
+      ),
+      body: Center(
+        child: Text('Add Grocery Item Page'),
+      ),
+    );
   }
 }
