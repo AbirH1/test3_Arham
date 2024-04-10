@@ -75,7 +75,10 @@ class _GroceryListPageState extends State<GroceryListPage> {
 
   void _navigateToAddItemPage() {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => AddGroceryItemPage()));
+        .push(MaterialPageRoute(builder: (context) => AddGroceryItemPage()))
+        .then((value) {
+      // Handle any data returned from AddGroceryItemPage if needed
+    });
   }
 
   @override
@@ -181,16 +184,109 @@ class _GroceryListPageState extends State<GroceryListPage> {
   }
 }
 
-class AddGroceryItemPage extends StatelessWidget {
+class AddGroceryItemPage extends StatefulWidget {
+  @override
+  _AddGroceryItemPageState createState() => _AddGroceryItemPageState();
+}
+
+class _AddGroceryItemPageState extends State<AddGroceryItemPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  DateTime _expiryDate = DateTime.now();
+  int _quantity = 0;
+
+  void _selectExpiryDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _expiryDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _expiryDate) {
+      setState(() {
+        _expiryDate = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Grocery Item'),
       ),
-      body: Center(
-        child: Text('Add Grocery Item Page'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: 'Name',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: 'Description',
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Text('Expiry Date: '),
+                Text(
+                  '${_expiryDate.month}/${_expiryDate.day}/${_expiryDate.year}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () => _selectExpiryDate(context),
+                  child: Text('Select Date'),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Quantity',
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _quantity = int.tryParse(value) ?? 0;
+                });
+              },
+            ),
+            SizedBox(height: 32),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Logic to save the grocery item
+                  Map<String, dynamic> newGroceryItem = {
+                    'name': _nameController.text,
+                    'description': _descriptionController.text,
+                    'expiryDate': _expiryDate,
+                    'quantity': _quantity,
+                  };
+                  // Add the new item to the list
+                  Navigator.of(context).pop(newGroceryItem);
+                },
+                child: Text('Save'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }
